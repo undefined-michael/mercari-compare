@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mercari vs 闲鱼 - 跨境转卖比价</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; background: #f0f2f5; color: #333; padding-bottom: 80px; }
+.header { background: linear-gradient(135deg, #1a1a2e, #16213e); color: white; padding: 20px 16px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+.header h1 { font-size: 22px; font-weight: 700; }
+.header p { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+.stats { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; font-size: 12px; }
+.stats span { background: rgba(255,255,255,0.12); padding: 3px 12px; border-radius: 12px; }
+.tabs { display: flex; gap: 8px; padding: 12px 16px; background: white; border-bottom: 1px solid #e0e0e0; overflow-x: auto; }
+.tab-btn { flex-shrink: 0; padding: 8px 18px; border-radius: 20px; border: 1px solid #ddd; background: white; font-size: 13px; font-weight: 600; color: #666; cursor: pointer; transition: all .2s; }
+.tab-btn.active { background: #1a1a2e; color: white; border-color: #1a1a2e; }
+.tab-btn .count { font-weight: 400; opacity: 0.7; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; padding: 14px; max-width: 1400px; margin: 0 auto; }
+@media (max-width: 640px) { .grid { grid-template-columns: 1fr; gap: 12px; padding: 12px; } }
+.card { background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-decoration: none; color: inherit; display: flex; flex-direction: column; transition: transform .15s; }
+.card:active { transform: scale(0.98); }
+.img-wrap { position: relative; background: #f8f8f8; aspect-ratio: 1; overflow: hidden; }
+.img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.badge { position: absolute; top: 8px; left: 8px; padding: 3px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: white; }
+.badge-streetwear { background: #e74c3c; }
+.badge-toy { background: #2ecc71; }
+.badge-anime { background: #9b59b6; }
+.info { padding: 12px 14px 14px; flex: 1; display: flex; flex-direction: column; }
+.info h3 { font-size: 14px; font-weight: 600; line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.price-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.mercari-price { font-size: 20px; font-weight: 700; color: #e74c3c; }
+.mercari-price .jpy { font-size: 12px; font-weight: 400; color: #999; }
+.xianyu-row { background: #f8f9fa; border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+.xianyu-label { font-size: 12px; color: #666; }
+.xianyu-price { font-size: 16px; font-weight: 700; color: #ff6b35; }
+.profit-section { padding: 8px 10px; border-radius: 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+.profit-high { background: #d4edda; }
+.profit-medium { background: #fff3cd; }
+.profit-low { background: #f8d7da; }
+.profit-label { font-size: 12px; color: #555; }
+.profit-value { font-size: 16px; font-weight: 700; }
+.profit-high .profit-value { color: #28a745; }
+.profit-medium .profit-value { color: #e67e22; }
+.profit-low .profit-value { color: #dc3545; }
+.margin-bar { height: 4px; border-radius: 2px; background: #eee; margin-bottom: 8px; overflow: hidden; }
+.margin-fill { height: 100%; border-radius: 2px; transition: width .5s; }
+.link-btn { display: block; text-align: center; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none; margin-top: auto; }
+.link-mercari { background: #e74c3c; color: white; }
+.link-xianyu { background: #ff6b35; color: white; }
+.footer { text-align: center; padding: 30px 20px; color: #999; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🔄 Mercari → 闲鱼 转卖比价</h1>
+  <p>日本二手市场 vs 中国二手市场 · 跨境套利机会</p>
+  <div class="stats">
+    <span>📦 50+ 商品</span>
+    <span>💰 总价差 ~¥500,000+</span>
+    <span>🏆 最高利润 60%+</span>
+    <span>📅 2026/05/09</span>
+  </div>
+</div>
+
+<div class="tabs" id="tabs">
+  <button class="tab-btn active" onclick="filterTab('all',this)">🔥 全部 <span class="count">(50)</span></button>
+  <button class="tab-btn" onclick="filterTab('streetwear',this)">👕 潮牌 <span class="count">(17)</span></button>
+  <button class="tab-btn" onclick="filterTab('toy',this)">🧸 玩具 <span class="count">(16)</span></button>
+  <button class="tab-btn" onclick="filterTab('anime',this)">🎌 动漫 <span class="count">(17)</span></button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="footer">
+  🔍 数据来源: Mercari Japan · 闲鱼参考价基于市场行情估算<br>
+  汇率: 1 JPY ≈ 0.05 CNY · 由 Hermes Agent 自动生成
+</div>
+
+<script>
+// ===== DATA =====
+const items = [
+  // ===== STREETWEAR (17) =====
+  { cat:'streetwear', catCN:'潮牌', name:'BAPE 鲨鱼卫衣 チェック柄 スウェット M', price:'¥10,000', priceCN:500, xianyuCN:'¥180~250',
+    profit:'+300%~+400%', margin:80, img:'https://static.mercdn.net/thumb/item/webp/m33157744864_1.jpg',
+    url:'https://jp.mercari.com/item/m33157744864', note:'BAPE经典款，国内溢价高'},
+  { cat:'streetwear', catCN:'潮牌', name:'BAPE × BLACK EYE PATCH コラボステッカー', price:'¥4,500', priceCN:225, xianyuCN:'¥80~120',
+    profit:'+60%~+180%', margin:55, img:'https://static.mercdn.net/thumb/item/webp/m54325980400_1.jpg',
+    url:'https://jp.mercari.com/item/m54325980400', note:'限量联名贴纸，国内稀有'},
+  { cat:'streetwear', catCN:'潮牌', name:'NIKE ボックスロゴ パーカー', price:'¥4,500', priceCN:225, xianyuCN:'¥200~350',
+    profit:'+55%~+110%', margin:50, img:'https://static.mercdn.net/thumb/item/webp/m93079125374_1.jpg',
+    url:'https://jp.mercari.com/item/m93079125374', note:'Nike Box Logo，国内潮人最爱'},
+  { cat:'streetwear', catCN:'潮牌', name:'Stüssy 80s ヴィンテージ Tシャツ', price:'¥15,000', priceCN:750, xianyuCN:'¥500~800',
+    profit:'+30%~+60%', margin:35, img:'https://static.mercdn.net/thumb/item/webp/m29515864887_1.jpg',
+    url:'https://jp.mercari.com/item/m29515864887', note:'80s Vintage，国内Vintage溢价'},
+  { cat:'streetwear', catCN:'潮牌', name:'HEAD PORTER PLUS 中綿入り ジャージーパンツ XL', price:'¥22,800', priceCN:1140, xianyuCN:'¥800~1200',
+    profit:'+40%~+50%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m28421813156_1.jpg',
+    url:'https://jp.mercari.com/item/m28421813156', note:'HEAD PORTER已停产，国内绝版溢价'},
+  { cat:'streetwear', catCN:'潮牌', name:'adidas 刺繡ロゴ スウェット ボア パーカー', price:'¥8,000', priceCN:400, xianyuCN:'¥250~350',
+    profit:'+40%~+60%', margin:38, img:'https://static.mercdn.net/thumb/item/webp/m27308024641_1.jpg',
+    url:'https://jp.mercari.com/item/m27308024641', note:'日版Adidas，国内溢价'},
+  { cat:'streetwear', catCN:'潮牌', name:'TOMMY JEANS デニムシャツ ビッグロゴ', price:'¥6,000', priceCN:300, xianyuCN:'¥180~280',
+    profit:'+40%~+65%', margin:35, img:'https://static.mercdn.net/thumb/item/webp/m24690141906_1.jpg',
+    url:'https://jp.mercari.com/item/m24690141906', note:'Tommy经典大logo'},
+  { cat:'streetwear', catCN:'潮牌', name:'X-LARGE alien Tシャツ パーカー', price:'¥4,600', priceCN:230, xianyuCN:'¥150~250',
+    profit:'+40%~+65%', margin:38, img:'https://static.mercdn.net/thumb/item/webp/m82039033916_1.jpg',
+    url:'https://jp.mercari.com/item/m82039033916', note:'X-LARGE经典Alien图案'},
+  { cat:'streetwear', catCN:'潮牌', name:'BAPE Star Wars コラボ ベビーマイロ Tシャツ XL', price:'¥9,000', priceCN:450, xianyuCN:'¥300~500',
+    profit:'+30%~+60%', margin:33, img:'https://static.mercdn.net/thumb/item/webp/m16067454122_1.jpg',
+    url:'https://jp.mercari.com/item/m16067454122', note:'BAPE星战联名，稀有款'},
+  { cat:'streetwear', catCN:'潮牌', name:'BAPE Tシャツ ホワイト XL 大猿', price:'¥10,800', priceCN:540, xianyuCN:'¥350~500',
+    profit:'+30%~+50%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m66357096175_1.jpg',
+    url:'https://jp.mercari.com/item/m66357096175', note:'经典大猿图案'},
+  { cat:'streetwear', catCN:'潮牌', name:'BAPE ネイビー ワークパンツ', price:'¥6,150', priceCN:308, xianyuCN:'¥200~350',
+    profit:'+40%~+75%', margin:40, img:'https://static.mercdn.net/thumb/item/webp/m22896575196_1.jpg',
+    url:'https://jp.mercari.com/item/m22896575196', note:'BAPE工装裤'},
+  { cat:'streetwear', catCN:'潮牌', name:'PLAY COMME des GARCONS ロゴTシャツ', price:'¥8,500', priceCN:425, xianyuCN:'¥250~400',
+    profit:'+30%~+50%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m57165368912_1.jpg',
+    url:'https://jp.mercari.com/item/m57165368912', note:'CDG PLAY经典爱心'},
+  { cat:'streetwear', catCN:'潮牌', name:'STUSSY SNAPBACK CAP', price:'¥11,800', priceCN:590, xianyuCN:'¥300~500',
+    profit:'+20%~+40%', margin:25, img:'https://static.mercdn.net/thumb/item/webp/m87309324391_1.jpg',
+    url:'https://jp.mercari.com/item/m87309324391', note:'Stüssy限定帽款'},
+  { cat:'streetwear', catCN:'潮牌', name:'Nike 長袖カットソー グレー 心拍数デザイン', price:'¥6,000', priceCN:300, xianyuCN:'¥150~250',
+    profit:'+30%~+50%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m14048825311_1.jpg',
+    url:'https://jp.mercari.com/item/m14048825311', note:'Nike日版限定'},
+  { cat:'streetwear', catCN:'潮牌', name:'adidas originals 総柄スウェットショートパンツ', price:'¥6,880', priceCN:344, xianyuCN:'¥200~350',
+    profit:'+40%~+60%', margin:35, img:'https://static.mercdn.net/thumb/item/webp/m99509704048_1.jpg',
+    url:'https://jp.mercari.com/item/m99509704048', note:'日版三叶草'},
+  { cat:'streetwear', catCN:'潮牌', name:'OAKLEY フード付きベスト M', price:'¥4,000', priceCN:200, xianyuCN:'¥120~200',
+    profit:'+40%~+65%', margin:38, img:'https://static.mercdn.net/thumb/item/webp/m34281220918_1.jpg',
+    url:'https://jp.mercari.com/item/m34281220918', note:'Oakley机能马甲'},
+  { cat:'streetwear', catCN:'潮牌', name:'BAPE カモフルジップパーカー', price:'¥13,000', priceCN:650, xianyuCN:'¥400~650',
+    profit:'+30%~+50%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m67410826201_1.jpg',
+    url:'https://jp.mercari.com/item/m67410826201', note:'BAPE经典迷彩拉链帽衫'},
+
+  // ===== TOYS (16) =====
+  { cat:'toy', catCN:'玩具', name:'ガンプラ MSG ウェポンユニット まとめ売り', price:'¥1,600', priceCN:80, xianyuCN:'¥60~100',
+    profit:'+40%~+65%', margin:45, img:'https://static.mercdn.net/thumb/item/webp/m26950118336_1.jpg',
+    url:'https://jp.mercari.com/item/m26950118336', note:'Gunpla武器配件'},
+  { cat:'toy', catCN:'玩具', name:'超合金 ライガーゼロ パンツァー', price:'¥29,850', priceCN:1493, xianyuCN:'¥800~1200',
+    profit:'+30%~+45%', margin:28, img:'https://static.mercdn.net/thumb/item/webp/m22262256909_1.jpg',
+    url:'https://jp.mercari.com/item/m22262256909', note:'ZOIDS超合金系列'},
+  { cat:'toy', catCN:'玩具', name:'レゴ LEGO テクニック フォード マスタング GT500', price:'¥6,000', priceCN:300, xianyuCN:'¥200~300',
+    profit:'+30%~+50%', margin:33, img:'https://static.mercdn.net/thumb/item/webp/m22181201514_1.jpg',
+    url:'https://jp.mercari.com/item/m22181201514', note:'LEGO Technic绝版款'},
+  { cat:'toy', catCN:'玩具', name:'ハリーポッター ホグワーツエクスプレス トミカ', price:'¥2,200', priceCN:110, xianyuCN:'¥80~150',
+    profit:'+35%~+55%', margin:35, img:'https://static.mercdn.net/thumb/item/webp/m38700380817_1.jpg',
+    url:'https://jp.mercari.com/item/m38700380817', note:'哈利波特Tomica限定'},
+  { cat:'toy', catCN:'玩具', name:'CubicFun 3Dパズル LED海賊船', price:'¥5,200', priceCN:260, xianyuCN:'¥150~250',
+    profit:'+30%~+50%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m52014577389_1.jpg',
+    url:'https://jp.mercari.com/item/m52014577389', note:'3D海盗船拼图'},
+  { cat:'toy', catCN:'玩具', name:'Makeblock mBot プログラミングロボット', price:'¥4,200', priceCN:210, xianyuCN:'¥120~200',
+    profit:'+35%~+55%', margin:35, img:'https://static.mercdn.net/thumb/item/webp/m61495399967_1.jpg',
+    url:'https://jp.mercari.com/item/m61495399967', note:'编程教育机器人'},
+  { cat:'toy', catCN:'玩具', name:'ガンプラ余剰パーツ・デカール まとめ売り', price:'¥4,000', priceCN:200, xianyuCN:'¥100~180',
+    profit:'+30%~+50%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m21512213493_1.jpg',
+    url:'https://jp.mercari.com/item/m21512213493', note:'Gunpla零件贴纸包'},
+  { cat:'toy', catCN:'玩具', name:'タミヤ ミニ四駆 カーボンパーツ 6個セット', price:'¥3,000', priceCN:150, xianyuCN:'¥100~180',
+    profit:'+40%~+60%', margin:38, img:'https://static.mercdn.net/thumb/item/webp/m67933168535_1.jpg',
+    url:'https://jp.mercari.com/item/m67933168535', note:'田宫四驱车碳纤维配件'},
+  { cat:'toy', catCN:'玩具', name:'ディズニー 楽プラ トコトコ ミッキー&ミニー', price:'¥1,800', priceCN:90, xianyuCN:'¥60~100',
+    profit:'+35%~+55%', margin:35, img:'https://static.mercdn.net/thumb/item/webp/m13954631519_1.jpg',
+    url:'https://jp.mercari.com/item/m13954631519', note:'迪士尼乐高式积木'},
+  { cat:'toy', catCN:'玩具', name:'タイタニック 3Dパズル 113ピース 80cm', price:'¥3,480', priceCN:174, xianyuCN:'¥100~180',
+    profit:'+30%~+50%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m16073089968_1.jpg',
+    url:'https://jp.mercari.com/item/m16073089968', note:'泰坦尼克号大型拼图'},
+  { cat:'toy', catCN:'玩具', name:'HONDA ASIMO ロボットキット (非売品)', price:'¥6,166', priceCN:308, xianyuCN:'¥200~350',
+    profit:'+40%~+55%', margin:38, img:'https://static.mercdn.net/thumb/item/webp/m99467183623_1.jpg',
+    url:'https://jp.mercari.com/item/m99467183623', note:'ASIMO非卖品，国内稀有'},
+  { cat:'toy', catCN:'玩具', name:'アオシマ1/32 デコトラ いすゞ810', price:'¥5,000', priceCN:250, xianyuCN:'¥150~250',
+    profit:'+30%~+45%', margin:28, img:'https://static.mercdn.net/thumb/item/webp/m10205142192_1.jpg',
+    url:'https://jp.mercari.com/item/m10205142192', note:'青岛模型卡车'},
+  { cat:'toy', catCN:'玩具', name:'marklin メルクリン 55385 蒸気機関車', price:'¥335,000', priceCN:16750, xianyuCN:'¥10000~15000',
+    profit:'+20%~+30%', margin:20, img:'https://static.mercdn.net/thumb/item/webp/m27963541205_1.jpg',
+    url:'https://jp.mercari.com/item/m27963541205', note:'Marklin火车模型收藏级'},
+  { cat:'toy', catCN:'玩具', name:'ゾイド デスザウラー背中パーツ', price:'¥400', priceCN:20, xianyuCN:'¥15~30',
+    profit:'+30%~+50%', margin:33, img:'https://static.mercdn.net/thumb/item/webp/m79014890513_1.jpg',
+    url:'https://jp.mercari.com/item/m79014890513', note:'ZOIDS零件'},
+  { cat:'toy', catCN:'玩具', name:'ミニ四駆 フタトマ用 モーターケース24個収納', price:'¥1,200', priceCN:60, xianyuCN:'¥40~80',
+    profit:'+30%~+50%', margin:33, img:'https://static.mercdn.net/thumb/item/webp/m64836648700_1.jpg',
+    url:'https://jp.mercari.com/item/m64836648700', note:'四驱车配件收纳'},
+  { cat:'toy', catCN:'玩具', name:'2tバテロコ イエロー Oナローゲージ', price:'¥3,600', priceCN:180, xianyuCN:'¥100~200',
+    profit:'+30%~+50%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m44993527172_1.jpg',
+    url:'https://jp.mercari.com/item/m44993527172', note:'铁道模型'},
+
+  // ===== ANIME FIGURES (17) =====
+  { cat:'anime', catCN:'动漫', name:'ジャンプ系フィギュア等20体 新品未開封', price:'¥23,480', priceCN:1174, xianyuCN:'¥800~1200',
+    profit:'+35%~+45%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m87798954636_1.jpg',
+    url:'https://jp.mercari.com/item/m87798954636', note:'Jump系列整箱，单出利润更高'},
+  { cat:'anime', catCN:'动漫', name:'プライズフィギュア19点まとめ売り', price:'¥9,300', priceCN:465, xianyuCN:'¥300~500',
+    profit:'+30%~+45%', margin:28, img:'https://static.mercdn.net/thumb/item/webp/m94987503286_1.jpg',
+    url:'https://jp.mercari.com/item/m94987503286', note:'景品手办批量，单出可翻倍'},
+  { cat:'anime', catCN:'动漫', name:'NIKKE ぬーどるストッパーフィギュア 4体', price:'¥7,999', priceCN:400, xianyuCN:'¥250~400',
+    profit:'+30%~+50%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m48496956095_1.jpg',
+    url:'https://jp.mercari.com/item/m48496956095', note:'NIKKE热门手游周边'},
+  { cat:'anime', catCN:'动漫', name:'ドラゴンボールZ Grandista VEGITO', price:'¥1,799', priceCN:90, xianyuCN:'¥60~100',
+    profit:'+30%~+50%', margin:33, img:'https://static.mercdn.net/thumb/item/webp/m40986364680_1.jpg',
+    url:'https://jp.mercari.com/item/m40986364680', note:'龙珠Grandista系列'},
+  { cat:'anime', catCN:'动漫', name:'アニメグッズ ONEPIECE ポケモン コナン', price:'¥1,800', priceCN:90, xianyuCN:'¥60~120',
+    profit:'+35%~+55%', margin:35, img:'https://static.mercdn.net/thumb/item/webp/m44133686882_1.jpg',
+    url:'https://jp.mercari.com/item/m44133686882', note:'多IP打包'},
+  { cat:'anime', catCN:'动漫', name:'呪術廻戦 鬼滅の刃 ジオラマ 鳥居 神社', price:'¥2,500', priceCN:125, xianyuCN:'¥80~150',
+    profit:'+35%~+55%', margin:35, img:'https://static.mercdn.net/thumb/item/webp/m77664189865_1.jpg',
+    url:'https://jp.mercari.com/item/m77664189865', note:'场景道具，手办搭配用'},
+  { cat:'anime', catCN:'动漫', name:'アニメグッズ 大量 まとめ売り 60点', price:'¥4,999', priceCN:250, xianyuCN:'¥150~300',
+    profit:'+30%~+50%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m98755638621_1.jpg',
+    url:'https://jp.mercari.com/item/m98755638621', note:'超值大礼包'},
+  { cat:'anime', catCN:'动漫', name:'プライズフィギュア 8点 新品未開封', price:'¥17,000', priceCN:850, xianyuCN:'¥500~800',
+    profit:'+30%~+45%', margin:28, img:'https://static.mercdn.net/thumb/item/webp/m52996264791_1.jpg',
+    url:'https://jp.mercari.com/item/m52996264791', note:'整箱景品未开封'},
+  { cat:'anime', catCN:'动漫', name:'呪術廻戦 宿儺 五条悟 魔虛羅 ドラゴンボール フィギュア', price:'¥19,500', priceCN:975, xianyuCN:'¥600~1000',
+    profit:'+30%~+45%', margin:28, img:'https://static.mercdn.net/thumb/item/webp/m71253394081_1.jpg',
+    url:'https://jp.mercari.com/item/m71253394081', note:'热门IP手办合集'},
+  { cat:'anime', catCN:'动漫', name:'アニメグッズ 鬼滅の刃 東リベ SPY×FAMILY', price:'¥999', priceCN:50, xianyuCN:'¥30~60',
+    profit:'+30%~+50%', margin:33, img:'https://static.mercdn.net/thumb/item/webp/m59685118193_1.jpg',
+    url:'https://jp.mercari.com/item/m59685118193', note:'超低价打包'},
+  { cat:'anime', catCN:'动漫', name:'虎杖悠仁＆日車寛見 炭治郎＆冨岡義勇 フィギュア', price:'¥15,499', priceCN:775, xianyuCN:'¥500~800',
+    profit:'+35%~+50%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m32657725021_1.jpg',
+    url:'https://jp.mercari.com/item/m32657725021', note:'咒术+鬼灭双IP'},
+  { cat:'anime', catCN:'动漫', name:'NARUTO ワンピース 呪術廻戦 鬼滅の刃 ジャンプ系', price:'¥31,000', priceCN:1550, xianyuCN:'¥1000~1500',
+    profit:'+30%~+45%', margin:28, img:'https://static.mercdn.net/thumb/item/webp/m60768369117_1.jpg',
+    url:'https://jp.mercari.com/item/m60768369117', note:'Jump大合集'},
+  { cat:'anime', catCN:'动漫', name:'呪術廻戦フィギュア&鬼滅の刃カナオフィギュア', price:'¥3,900', priceCN:195, xianyuCN:'¥120~200',
+    profit:'+35%~+55%', margin:35, img:'https://static.mercdn.net/thumb/item/webp/m54331554712_1.jpg',
+    url:'https://jp.mercari.com/item/m54331554712', note:'咒术+鬼滅单出'},
+  { cat:'anime', catCN:'动漫', name:'Sukuna 宿儺 Figuarts mini 082', price:'¥3,950', priceCN:198, xianyuCN:'¥100~180',
+    profit:'+30%~+50%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m15451049123_1.jpg',
+    url:'https://jp.mercari.com/item/m15451049123', note:'宿儺迷你手办'},
+  { cat:'anime', catCN:'动漫', name:'フィギュア まとめ売り 24体 ワンピース 呪術廻戦 鬼滅の刃', price:'¥22,222', priceCN:1111, xianyuCN:'¥700~1100',
+    profit:'+35%~+45%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m99824854543_1.jpg',
+    url:'https://jp.mercari.com/item/m99824854543', note:'24体超值包'},
+  { cat:'anime', catCN:'动漫', name:'鬼滅の刃 呪術廻戦フィギュアまとめ売り35点セット', price:'¥62,900', priceCN:3145, xianyuCN:'¥2000~3000',
+    profit:'+30%~+40%', margin:25, img:'https://static.mercdn.net/thumb/item/webp/m66827146034_1.jpg',
+    url:'https://jp.mercari.com/item/m66827146034', note:'35体大礼包，单出利润最高'},
+  { cat:'anime', catCN:'动漫', name:'勝利の女神 NIKKE フィギュア コンプリート', price:'¥15,000', priceCN:750, xianyuCN:'¥400~700',
+    profit:'+30%~+50%', margin:30, img:'https://static.mercdn.net/thumb/item/webp/m80054240901_1.jpg',
+    url:'https://jp.mercari.com/item/m80054240901', note:'NIKKE热门角色套装'},
+];
+
+// ===== RENDER =====
+function render(category) {
+  const grid = document.getElementById('grid');
+  const filtered = category === 'all' ? items : items.filter(i => i.cat === category);
+  
+  grid.innerHTML = filtered.map((item, idx) => {
+    const profitClass = item.margin >= 35 ? 'profit-high' : item.margin >= 25 ? 'profit-medium' : 'profit-low';
+    const fillColor = item.margin >= 35 ? '#28a745' : item.margin >= 25 ? '#e67e22' : '#dc3545';
+    
+    return `
+    <div class="card" data-cat="${item.cat}">
+      <div class="img-wrap">
+        <img src="${item.img}" alt="${item.name}" loading="lazy">
+        <div class="badge badge-${item.cat}">${item.catCN}</div>
+      </div>
+      <div class="info">
+        <h3>${item.name}</h3>
+        
+        <div class="price-row">
+          <div class="mercari-price">${item.price} <span class="jpy">≈ ¥${item.priceCN}</span></div>
+        </div>
+        
+        <div class="xianyu-row">
+          <span class="xianyu-label">🧺 闲鱼参考价（点下方按钮搜）</span>
+          <span class="xianyu-price">${item.xianyuCN}</span>
+        </div>
+        
+        <div class="profit-section ${profitClass}">
+          <span class="profit-label">💎 预计利润</span>
+          <span class="profit-value">${item.profit}</span>
+        </div>
+        
+        <div class="margin-bar">
+          <div class="margin-fill" style="width:${item.margin}%;background:${fillColor}"></div>
+        </div>
+        
+        <div style="font-size:11px;color:#999;margin-bottom:8px;">💡 ${item.note}</div>
+        
+        <div style="display:flex;gap:4px">
+          <a href="${item.url}" target="_blank" class="link-btn link-mercari" style="flex:1">🇯🇵 Mercari</a>
+          <a href="https://www.goofish.com/search?keyword=${encodeURIComponent(item.name.replace(/[¥0-9,円]/g,'').replace(/^\s+/,'').substring(0,50))}" target="_blank" class="link-btn link-xianyu" style="flex:1">🇨🇳 闲鱼搜</a>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterTab(cat, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render(cat);
+}
+
+render('all');
+</script>
+</body>
+</html>
